@@ -1,0 +1,68 @@
+{
+	"compiler": {
+		"version": "0.5.16+commit.9c3226ce"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount0",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "data",
+						"type": "bytes"
+					}
+				],
+				"name": "pancakeCall",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"methods": {}
+		},
+		"userdoc": {
+			"methods": {}
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"PancakeFactory.sol": "IPancakeCallee"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"PancakeFactory.sol": {
+			"keccak256": "0xb52709df7c3c46c9a0faaa255c1904b1c9ea289d2198109461ac36049b6cf9eb",
+			"urls": [
+				"bzz-raw://c9496b713550b1730c5a750264e57fcbc6f6feabee53e9701d5afe7c9f9877de",
+				"dweb:/ipfs/QmdHksYEbf3uj9dDC9YGXiwQXWiTUHkaah5Bx5RidpiiZa"
+			]
+		}
+	},
+	"version": 1
+}
