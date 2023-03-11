@@ -1,11 +1,10 @@
- - import 
-```shell
-"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
+ ```shell
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol";
 ```
  - mengimpor file ERC721.sol dari OpenZeppelin untuk membuat kontrak ERC721
- - import 
+
 ```shell
-"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 ```
  - mengimpor file ReentrancyGuard.sol dari OpenZeppelin untuk pengamanan terhadap serangan reentrancy
  - address public owner - variabel untuk menyimpan alamat pemilik kontrak

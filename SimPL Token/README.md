@@ -1,6 +1,5 @@
- - import
 ```shell
-"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 ```
  - mengimpor file ERC20Burnable.sol dari OpenZeppelin untuk menambahkan fitur burnable
 contract MyToken is ERC20, ERC20Burnable, ReentrancyGuard
