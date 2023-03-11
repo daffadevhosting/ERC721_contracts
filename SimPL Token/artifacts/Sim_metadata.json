@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.19+commit.7dd6d404"
+		"version": "0.8.18+commit.87f61d96"
 	},
 	"language": "Solidity",
 	"output": {
@@ -179,7 +179,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"SimPL Token/SimPL.sol": "SimPL"
+			"SimPL Token/SimPL.sol": "Sim"
 		},
 		"evmVersion": "paris",
 		"libraries": {},
@@ -194,11 +194,11 @@
 	},
 	"sources": {
 		"SimPL Token/SimPL.sol": {
-			"keccak256": "0x1417e8ef55de7e306db24d3a056335076dbac769547fc547367563e50b5f5785",
+			"keccak256": "0x95b2efa893372e364c675f3ad28fe1740ec30353cd66b67c3c85da0425ad5a1b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://f9d0b22df5cc31916cc3833c52ac9ace41ca0ed15b6dd261ca950e03e1681f9f",
-				"dweb:/ipfs/QmNz8eDfMqUGfrfewMATknCuqCTyyyGU6o4oGB66gQ8iCn"
+				"bzz-raw://504417ff92e39e2a98915c87622a21f478343bd89e23725da83da7b57c0231c3",
+				"dweb:/ipfs/QmePHD9akiDGWAzw7V1RfnvgnanZivQ6263oCqfJX1EXBj"
 			]
 		}
 	},
