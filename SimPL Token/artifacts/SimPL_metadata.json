@@ -452,7 +452,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contract-8c5600badf.sol": "SimPL"
+			"SimPL Token/SimPL.sol": "SimPL"
 		},
 		"evmVersion": "paris",
 		"libraries": {},
@@ -460,7 +460,7 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": true,
+			"enabled": false,
 			"runs": 200
 		},
 		"remappings": []
@@ -514,12 +514,12 @@
 				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
 			]
 		},
-		"contract-8c5600badf.sol": {
-			"keccak256": "0x3ffb1407e7e69b9cf0cf56cd18fac73cf24dfb209ccd16093c2031ce8c81acc0",
+		"SimPL Token/SimPL.sol": {
+			"keccak256": "0x5e2c75f55c54b9b7634a60e6c9e2d6d9486d64542a6f46df0b4b3b76c78d9106",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://66f51bbeef05106102c65a5a21814f4ccde9d09db10e7de8682cde549ba16182",
-				"dweb:/ipfs/QmcsQMrXQhM7621za7aQqZcQcSAZkkjNUCom2ErJibzaxr"
+				"bzz-raw://ed68d651e928a590a4d5f8699695ce172782bb35f84059e8875b2e3d7294013f",
+				"dweb:/ipfs/QmcgBo4MZAA9d3F5qA3JMDiZNC7J5yAui6hqFLzfoSYCvK"
 			]
 		}
 	},

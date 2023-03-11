@@ -795,7 +795,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contract-a3ff8222c7.sol": "SimPL"
+			"SimPL NFT/SimPL-NFT.sol": "SimPL"
 		},
 		"evmVersion": "paris",
 		"libraries": {},
@@ -953,7 +953,7 @@
 				"dweb:/ipfs/Qmct36zWXv3j7LZB83uwbg7TXwnZSN1fqHNDZ93GG98bGz"
 			]
 		},
-		"contract-a3ff8222c7.sol": {
+		"SimPL NFT/SimPL-NFT.sol": {
 			"keccak256": "0x83ec69c4add24e16833f8d5b213f57c9974e6d9caa0ad0f94cc1b9fe29fee7b0",
 			"license": "MIT",
 			"urls": [

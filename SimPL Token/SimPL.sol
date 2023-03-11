@@ -7,7 +7,7 @@ import "@openzeppelin/contracts@4.8.2/access/Ownable.sol";
 
 contract SimPL is ERC20, ERC20Burnable, Ownable {
     constructor() ERC20("SimPL", "SimPL") {
-        _mint(msg.sender, 10000 * 10 ** decimals());
+        _mint(msg.sender, 10000 * 18 ** decimals());
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
