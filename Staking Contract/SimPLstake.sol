@@ -1,115 +1,89 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// SPDX-License-Identifier: MIT
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/utils/IERC721Receiver.sol";
-import "@openzeppelin/contracts/token/ERC721/utils/SafeERC721.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract NftStaking is IERC721Receiver, ReentrancyGuard {
-    using EnumerableSet for EnumerableSet.UintSet;
+contract NFTStaking is IERC721Receiver, ReentrancyGuard {
     using SafeMath for uint256;
-    using SafeERC721 for IERC721;
+    using Address for address;
+    using SafeERC20 for IERC20;
+
+    uint256 public constant MINIMUM_STAKING_TIME = 30 days;
+    uint256 public constant REWARD_RATE = 10; // 10%
+    uint256 public constant DECIMALS = 18;
 
     struct Stake {
-        uint256 amount;
-        uint256 startTime;
-        uint256 endTime;
-        uint256 reward;
+        uint256 tokenId;
+        uint256 stakedTime;
+        uint256 lastClaimedTime;
+        bool active;
     }
 
     IERC721 public nft;
-    uint256 public constant REWARD_PER_DAY = 100;
-    uint256 public minStakingTime = 1 days;
-    uint256 public maxStakingTime = 30 days;
-    mapping(uint256 => Stake) public stakes;
-    mapping(address => EnumerableSet.UintSet) private stakedTokens;
-    bool private isLocked;
+    IERC20 public rewardToken;
+    mapping(address => Stake) public stakes;
 
-    constructor(address nftAddress) {
-        nft = IERC721(nftAddress);
+    event Staked(address indexed owner, uint256 indexed tokenId, uint256 stakedTime);
+    event Unstaked(address indexed owner, uint256 indexed tokenId, uint256 reward);
+    event RewardClaimed(address indexed owner, uint256 indexed tokenId, uint256 reward);
+
+    constructor(address _nftAddress, address _rewardTokenAddress) {
+        nft = IERC721(_nftAddress);
+        rewardToken = IERC20(_rewardTokenAddress);
     }
 
-    function stake(uint256 tokenId, uint256 stakingTime) public nonReentrant {
-        require(!isLocked, "Contract is locked");
-        isLocked = true;
-        require(stakingTime >= minStakingTime && stakingTime <= maxStakingTime, "Invalid staking time");
-        require(nft.ownerOf(tokenId) == msg.sender, "Not the token owner");
-        require(stakedTokens[msg.sender].add(tokenId), "Already staked");
-        nft.safeTransferFrom(msg.sender, address(this), tokenId);
-        stakes[tokenId] = Stake({
-            amount: tokenId,
-            startTime: block.timestamp,
-            endTime: block.timestamp.add(stakingTime),
-            reward: stakes[tokenId].reward
-        });
-        isLocked = false;
+    function stake(uint256 _tokenId) external nonReentrant {
+        require(nft.ownerOf(_tokenId) == msg.sender, "NFTStaking: not owner of token");
+        require(!stakes[msg.sender].active, "NFTStaking: already staked");
+        require(nft.getApproved(_tokenId) == address(this), "NFTStaking: not approved");
+        
+        nft.safeTransferFrom(msg.sender, address(this), _tokenId);
+        stakes[msg.sender] = Stake(_tokenId, block.timestamp, block.timestamp, true);
+
+        emit Staked(msg.sender, _tokenId, block.timestamp);
     }
 
-    function unstake(uint256 tokenId) public nonReentrant {
-        require(!isLocked, "Contract is locked");
-        isLocked = true;
-        require(stakes[tokenId].amount == tokenId, "Invalid token ID");
-        require(stakes[tokenId].endTime <= block.timestamp, "Staking time not reached");
-        require(stakedTokens[msg.sender].remove(tokenId), "Token not staked");
-        nft.safeTransferFrom(address(this), msg.sender, tokenId);
-        delete stakes[tokenId];
-        isLocked = false;
+    function unstake() external nonReentrant {
+        Stake storage stake = stakes[msg.sender];
+        require(stake.active, "NFTStaking: not staked");
+        require(block.timestamp >= stake.stakedTime.add(MINIMUM_STAKING_TIME), "NFTStaking: staking time not reached");
+
+        uint256 reward = calculateReward(msg.sender, stake);
+        rewardToken.safeTransfer(msg.sender, reward);
+        nft.safeTransferFrom(address(this), msg.sender, stake.tokenId);
+        delete stakes[msg.sender];
+
+        emit Unstaked(msg.sender, stake.tokenId, reward);
     }
 
-    function claimReward(uint256 tokenId) public nonReentrant {
-        require(!isLocked, "Contract is locked");
-        isLocked = true;
-        require(stakes[tokenId].amount == tokenId, "Invalid token ID");
-        require(stakes[tokenId].endTime <= block.timestamp, "Staking time not reached");
-        uint256 reward = calculateReward(tokenId);
-        require(reward > 0, "No reward to claim");
-        stakes[tokenId].reward = 0;
-        (bool success, ) = msg.sender.call{value: reward}("");
-        require(success, "Failed to send reward");
-        isLocked = false;
+    function claimReward() external nonReentrant {
+        Stake storage stake = stakes[msg.sender];
+        require(stake.active, "NFTStaking: not staked");
+
+        uint256 reward = calculateReward(msg.sender, stake);
+        stake.lastClaimedTime = block.timestamp;
+        rewardToken.safeTransfer(msg.sender, reward);
+
+        emit RewardClaimed(msg.sender, stake.tokenId, reward);
     }
 
-        function calculateReward(uint256 tokenId) public view returns (uint256) {
-        require(stakes[tokenId].amount == tokenId, "Invalid token ID");
-        uint256 stakingTime = block.timestamp.sub(stakes[tokenId].startTime);
-        uint256 reward = stakes[tokenId].reward.add(stakingTime.mul(REWARD_PER_DAY).mul(stakes[tokenId].amount).div(1e18));
-        return reward;
-    }
-
-    function setMinStakingTime(uint256 newMinStakingTime) public {
-        require(msg.sender == owner(), "Not the owner");
-        minStakingTime = newMinStakingTime;
-    }
-
-    function setMaxStakingTime(uint256 newMaxStakingTime) public {
-        require(msg.sender == owner(), "Not the owner");
-        maxStakingTime = newMaxStakingTime;
-    }
-
-    function withdraw() public {
-        require(msg.sender == owner(), "Not the owner");
-        uint256 balance = address(this).balance;
-        (bool success, ) = msg.sender.call{value: balance}("");
-        require(success, "Failed to withdraw balance");
-    }
-
-    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-
-    function owner() public view returns (address) {
-        return address(this);
-    }
-
-    function getStakedTokens(address staker) public view returns (uint256[] memory) {
-        uint256[] memory result = new uint256[](stakedTokens[staker].length());
-        for (uint256 i = 0; i < stakedTokens[staker].length(); i++) {
-            result[i] = stakedTokens[staker].at(i);
-        }
-        return result;
-    }
+     function calculateReward(address _owner, Stake storage _stake) internal view returns (uint256) {
+        uint256 stakedTime = block.timestamp.sub(_stake.lastClaimedTime);
+        uint256 reward = stakedTime.mul(REWARD_RATE).mul(DECIMALS).div(MINIMUM_STAKING_TIME).div(DECIMALS);    return reward;
 }
 
+function onERC721Received(
+    address,
+    address,
+    uint256,
+    bytes calldata
+) external pure override returns (bytes4) {
+    return this.onERC721Received.selector;
+}
+}
